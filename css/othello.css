@@ -1,0 +1,48 @@
+body {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.buttonBox {
+  width: 420px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+}
+.buttonBox button {
+  width: 30%;
+  display: block;
+  margin: 0 auto 20px;
+  border: 1px solid #000;
+  padding: 5px;
+}
+
+.teban {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+table {
+  width: 420px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+table td {
+  border: 1px solid #000;
+  width: 70px;
+  height: 70px;
+  vertical-align: center;
+}
+table td canvas {
+  display: block;
+  margin: 0 auto;
+}/*# sourceMappingURL=othello.css.map */
