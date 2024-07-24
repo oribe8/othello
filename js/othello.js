@@ -1,5 +1,16 @@
 'use strict';
 
+//　1.canvasを使い、tdタグの中に黒丸・白丸を置く
+//　※空欄を状態0、黒丸を状態1、白丸を状態2にする
+//
+//　2.オセロのルールが適用されるよう、プログラムを作る
+//　下記2つの条件をどちらも満たす場合、
+//　　(1)置いたコマの周りの、1マス以上先に異なる色のコマがある
+//　　(2)(1)の先のコマに同じ色のコマがある
+//　自分のコマと(2)の間にあるコマの色を反転させる
+//
+//　3.全てのテーブル枠が埋まったら、点数・判定を出す
+
 let trClass = ''; //trタグに付与したクラスを保存
 let tableTd =''; //tdタグの内容を、配列として保存
 let canvas = ''; //canvas用1
@@ -11,7 +22,7 @@ let i = 0; //「blackJudge」「whiteJudge」用の変数（for用1）
 let j = 0; //「blackJudge」「whiteJudge」用の変数（for用2）
 let piecesTotal = 0; //コマのカウント用、36（枠数）-4（初期配置のコマ数）により32が最大値
 
-//スキップボタン、降参ボタンを非活性にする（buttonタグに直接指定する形だとキャッシュのせいかうまく非活性にならない）
+//スキップボタン、降参ボタンを非活性にする（buttonタグに直接指定する形だとキャッシュの成果うまく非活性にならない）
 document.querySelector('.skipButton').disabled = 'disabled'; //スキップボタンを非活性にする
 document.querySelector('.surrenderButton').disabled = 'disabled'; //降参ボタンを非活性にする
 
@@ -110,20 +121,10 @@ document.querySelector('.startButton').onclick = function(){
 
 //↓----------function----------↓
 
-//一定時間、処理を止める（今のところ未使用）
-function sleep(t) {
-    let sleepcount = 0;
-    console.log('sleep開始');
-    setTimeout(sleepcount =1 , t);
-    if(sleepcount === 1) {
-        console.log('sleep終わり');
-    }else{
-        setInterval(sleep,1000);
-    }
-}
-
 //結果判定用
 function finalVerdict() {
+    document.querySelector('.skipButton').disabled = 'disabled'; //スキップボタンを非活性にする
+    document.querySelector('.surrenderButton').disabled = 'disabled'; //降参ボタンを非活性にする
     let b = 0;
     let w = 0;
     for(let p in pieceSta) {
@@ -172,8 +173,6 @@ function whiteAdd(wnum) {
     console.log(`whiteAdd${wnum}`);
 }
 
-//★初めのfor文の際、コマが何もないときの挙動を追加する必要あり★
-
 //裏返すかどうか判定（プレイヤー1用）
 //pieceStaが2（白）の場合作動
 //引数部分には、置いたコマの位置が入る
@@ -183,7 +182,7 @@ function blackJudge(bjnum) {
         console.log('黒1_左上のコマ判定（-7）稼働');
         // BJMinus(bjnum,7);
         if(bjnum-7*2 > 0 && pieceSta[bjnum-7*2] !== 0 && (bjnum-7) % 6 !== 1) { //2つ先のコマが存在するか確認
-            for(i = bjnum-7*2; i>=1 && i<=36 && pieceSta[i] !== 0; i -= 7) { //2つ先以上のマスに、黒いコマがあるか順に確認していく
+            for(i = bjnum-7*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 0; i -= 7) { //2つ先以上のマスに、黒いコマがあるか順に確認していく。また、iが6の倍数になった場合、処理を終了させる（一番右のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 1) { //2つ先以上のマスについて、黒いコマがあれば稼働（※1）
                     blackAdd(bjnum-7); //1つ先のコマを黒にする（※2）
                     placeable = 1; //裏返すコマがあるので1に変更
@@ -229,7 +228,7 @@ function blackJudge(bjnum) {
         console.log('黒3_右上のコマ判定（-5）稼働');
         // BJMinus(bjnum,5);
         if(bjnum-5*2 > 0 && pieceSta[bjnum-5*2] !== 0 && (bjnum-5) % 6 !== 0) { //2つ先のコマが存在するか確認
-            for(i = bjnum-5*2; i>=1 && i<=36 && pieceSta[i] !== 0; i -= 5) { //2つ先以上のマスに、黒いコマがあるか順に確認していく
+            for(i = bjnum-5*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 1; i -= 5) { //2つ先以上のマスに、黒いコマがあるか順に確認していく。また、iを6で割った余りが1になった場合、処理を終了させる（一番左のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 1) { //2つ先以上のマスについて、黒いコマがあれば稼働（※1）
                     blackAdd(bjnum-5); //1つ先のコマを黒にする（※2）
                     placeable = 1; //裏返すコマがあるので1に変更
@@ -298,7 +297,7 @@ function blackJudge(bjnum) {
         console.log('黒6_左下のコマ判定（+5）稼働');
         // BJPlus(bjnum,5);
         if(bjnum + 5*2 <= 36 && pieceSta[bjnum + 5*2] !== 0 && (bjnum+5) % 6 !== 1) { //2つ先のコマが存在するか確認
-            for(i = bjnum + 5*2; i>=1 && i<=36 && pieceSta[i] !== 0; i += 5) { //2つ先以上のマスに、黒いコマがあるか順に確認していく
+            for(i = bjnum + 5*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 0; i += 5) { //2つ先以上のマスに、黒いコマがあるか順に確認していく。また、iが6の倍数になった場合、処理を終了させる（一番右のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 1) { //2つ先以上のマスについて、黒いコマがあれば稼働（※1）
                     blackAdd(bjnum + 5); //1つ先のコマを黒にする（※2）
                     placeable = 1; //裏返すコマがあるので1に変更
@@ -344,7 +343,7 @@ function blackJudge(bjnum) {
         console.log('黒8_右下のコマ判定（+7）稼働');
         // BJPlus(bjnum,7);
         if(bjnum + 7*2 <= 36 && pieceSta[bjnum + 7*2] !== 0 && (bjnum+7) % 6 !== 0) { //2つ先のコマが存在するか確認
-            for(i = bjnum + 7*2; i>=1 && i<=36 && pieceSta[i] !== 0; i += 7) { //2つ先以上のマスに、黒いコマがあるか順に確認していく
+            for(i = bjnum + 7*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 1; i += 7) { //2つ先以上のマスに、黒いコマがあるか順に確認していく。また、iを6で割った余りが1になった場合、処理を終了させる（一番左のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 1) { //2つ先以上のマスについて、黒いコマがあれば稼働（※1）
                     blackAdd(bjnum + 7); //1つ先のコマを黒にする（※2）
                     placeable = 1; //裏返すコマがあるので1に変更
@@ -373,7 +372,7 @@ function whiteJudge(whnum) {
         console.log('白1_左上のコマ判定（-7）稼働');
         // WJMinus(whnum,7);
         if(whnum - 7*2 > 0 && pieceSta[whnum - 7*2] !== 0 && (whnum - 7) % 6 !== 1) { //2つ先のコマが存在するか確認
-            for(i = whnum - 7*2; i>=1 && i<=36 && pieceSta[i] !== 0; i -= 7) { //2つ先以上のマスに、白いコマがあるか順に確認していく
+            for(i = whnum - 7*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 0; i -= 7) { //2つ先以上のマスに、白いコマがあるか順に確認していく。また、iが6の倍数になった場合、処理を終了させる（一番右のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 2) { //2つ先以上のマスについて、白いコマがあれば稼働（※1）
                     console.log(whnum - 7); //確認用1
                     whiteAdd(whnum - 7); //1つ先のコマを白にする（※2）
@@ -421,7 +420,7 @@ function whiteJudge(whnum) {
         console.log('白3_右上のコマ判定（-5）稼働');
         // WJMinus(whnum,5);
         if(whnum - 5*2 > 0 && pieceSta[whnum - 5*2] !== 0 && (whnum-5) % 6 !== 0) { //2つ先のコマが存在するか確認
-            for(i = whnum - 5*2; i>=1 && i<=36 && pieceSta[i] !== 0; i -= 5) { //2つ先以上のマスに、白いコマがあるか順に確認していく
+            for(i = whnum - 5*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 1; i -= 5) { //2つ先以上のマスに、白いコマがあるか順に確認していく。また、iを6で割った余りが1になった場合、処理を終了させる（一番左のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 2) { //2つ先以上のマスについて、白いコマがあれば稼働（※1）
                     console.log(whnum - 5); //確認用1
                     whiteAdd(whnum - 5); //1つ先のコマを白にする（※2）
@@ -493,7 +492,7 @@ function whiteJudge(whnum) {
         console.log('白6_左下のコマ判定（+5）稼働');
         // WJPlus(whnum,5);
         if(whnum + 5*2 <= 36 && pieceSta[whnum + 5*2] !== 0 && (whnum + 5) % 6 !== 1) { //2つ先のコマが存在するか確認
-            for(i = whnum + 5*2; i>=1 && i<=36 && pieceSta[i] !== 0; i += 5) { //2つ先以上のマスに、白いコマがあるか順に確認していく
+            for(i = whnum + 5*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 0; i += 5) { //2つ先以上のマスに、白いコマがあるか順に確認していく。また、iが6の倍数になった場合、処理を終了させる（一番右のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 2) { //2つ先以上のマスについて、白いコマがあれば稼働（※1）
                     console.log(whnum + 5); //確認用1
                     whiteAdd(whnum + 5); //1つ先のコマを白にする（※2）
@@ -541,7 +540,7 @@ function whiteJudge(whnum) {
         console.log('白8_右下のコマ判定（+7）稼働');
         // WJPlus(whnum,7);
         if(whnum + 7*2 <= 36 && pieceSta[whnum + 7*2] !== 0 && (whnum + 7) % 6 !== 0) { //2つ先のコマが存在するか確認
-            for(i = whnum + 7*2; i>=1 && i<=36 && pieceSta[i] !== 0; i += 7) { //2つ先以上のマスに、白いコマがあるか順に確認していく
+            for(i = whnum + 7*2; i>=1 && i<=36 && pieceSta[i] !== 0 && i % 6 !== 1; i += 7) { //2つ先以上のマスに、白いコマがあるか順に確認していく。また、iを6で割った余りが1になった場合、処理を終了させる（一番左のマスを対象に含めないようにするため）
                 if(pieceSta[i] === 2) { //2つ先以上のマスについて、白いコマがあれば稼働（※1）
                     console.log(whnum + 7); //確認用1
                     whiteAdd(whnum + 7); //1つ先のコマを白にする（※2）
