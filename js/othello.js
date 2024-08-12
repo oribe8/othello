@@ -22,7 +22,7 @@ let i = 0; //「blackJudge」「whiteJudge」用の変数（for用1）
 let j = 0; //「blackJudge」「whiteJudge」用の変数（for用2）
 let piecesTotal = 0; //コマのカウント用、36（枠数）-4（初期配置のコマ数）により32が最大値
 
-//スキップボタン、降参ボタンを非活性にする（buttonタグに直接指定する形だとキャッシュの成果うまく非活性にならない）
+//スキップボタン、降参ボタンを非活性にする（buttonタグに直接指定する形だとキャッシュの影響かうまく非活性にならない）
 document.querySelector('.skipButton').disabled = 'disabled'; //スキップボタンを非活性にする
 document.querySelector('.surrenderButton').disabled = 'disabled'; //降参ボタンを非活性にする
 
